@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; margin: 0; }
+        .container { text-align: center; }
+        input, button { margin: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather App</h1>
+        <input type="text" id="city" placeholder="Enter city">
+        <button id="getWeather">Get Weather</button>
+        <p id="weatherResult"></p>
+    </div>
+    <script>
+        const apiKey = 'YOUR_API_KEY'; // Replace with your OpenWeatherMap API key
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cityInput = document.getElementById('city');
+            const getWeatherButton = document.getElementById('getWeather');
+            const weatherResult = document.getElementById('weatherResult');
+
+            getWeatherButton.addEventListener('click', () => {
+                const city = cityInput.value;
+                if (city) {
+                    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.weather) {
+                                const temp = data.main.temp;
+                                const description = data.weather[0].description;
+                                weatherResult.textContent = `Temperature: ${temp}°C, Weather: ${description}`;
+                            } else {
+                                weatherResult.textContent = 'City not found.';
+                            }
+                        })
+                        .catch(() => weatherResult.textContent = 'Error fetching weather data.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

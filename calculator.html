@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tip Calculator</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            background-color: #f0f0f0; 
+            margin: 0; }
+        .container{
+             text-align: center; }
+        input, button { 
+            margin: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tip Calculator</h1>
+        <input type="number" id="billAmount" placeholder="Bill Amount" step="0.01">
+        <input type="number" id="tipPercentage" placeholder="Tip Percentage" step="1">
+        <button id="calculateTip">Calculate Tip</button>
+        <p id="result"></p>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const billAmount = document.getElementById('billAmount');
+            const tipPercentage = document.getElementById('tipPercentage');
+            const calculateTipButton = document.getElementById('calculateTip');
+            const result = document.getElementById('result');
+
+            calculateTipButton.addEventListener('click', () => {
+                const amount = parseFloat(billAmount.value);
+                const percentage = parseFloat(tipPercentage.value);
+
+                if (isNaN(amount) || isNaN(percentage) || amount <= 0 || percentage <= 0) {
+                    result.textContent = 'Please enter valid numbers.';
+                } else {
+                    const tip = (amount * (percentage / 100)).toFixed(2);
+                    result.textContent = `Tip: $${tip}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

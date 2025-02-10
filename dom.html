@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOM LERNING</title>
+    <style>
+        .bg-black{
+            background-color: #212121;
+            color: #fff;
+        }
+    </style>
+</head>
+<body class="bg-black">
+    <div >
+        <h1 id="title" class="heading">Dom lerning on chai or code</h1>
+         <p>Lorem ipsum dolor sit amet.</p> <!--//queryselector select first h2 tag in inspact -->
+       <h2>Lorem ipsum dolor sit.</h2>  <!-- //queryselector('#title')-for id select ,we can use input or input type-->
+        <h2>Lorem, ipsum dolor.</h2>
+        <!-- window-docment-html,((head-title,meta),(body-div,atribute,head,paragraph)) -->
+    </div>
+    <ul>
+        <li>one</li>
+        <li>two</li>
+        <li>three</li>
+    </ul>
+    <!-- node list is not a array because array cantain map -or in node list we cannot add style
+        const templist=document.querySelectorAll('li')
+    we can specify a list ,templist[0].style.color="green"
+  templist.foreach(function(l){
+    l.style.backgroundcolor='green'
+  })
+  
+  using for each loop we can chnage background color all list items
+  we use for each loop because it can not work in array we can not use map in for each
+
+  const tempClassList= document.grtElementByClassName('list-item')-html collection
+     tempClassList.forEach(function(li){
+        cosole.log(li)// direct not print need to convert 
+       const myConvertArray= Array.from(tempClassList)//converting into array
+     })
+
+     const myConvertArray= Array.from(tempClassList)
+     myConvertArray.forEach(function(){
+        li.style.color="orange"
+     }
+      -->
+</body>
+</html>
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <title>DOM learning</title>
+    <style>
+        .bg-black{
+            background-color: #212121;
+            color: #fff;
+        }
+    </style>
+</head>
+<body class="bg-black">
+    <div >
+        <h1  id="title" class="heading">DOM learning on Chai aur code <span style="display: none;">test text</span></h1>
+        <h2>Lorem ipsum dolor sit.</h2>
+        <h2>Lorem ipsum dolor sit.</h2>
+        <h2>Lorem ipsum dolor sit.</h2>
+        <p>Lorem ipsum dolor sit amet.</p>
+        <input type="password" name="" id="">
+
+        <ul>
+            <li class="list-item">one</li>
+            <li class="list-item">two</li>
+            <li class="list-item">three</li>
+            <li class="list-item">four</li>
+        </ul>
+    </div>
+</body>
+</html> -->

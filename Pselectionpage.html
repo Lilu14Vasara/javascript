@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Selection</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #4a90e2, #9013fe);
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #4a90e2;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .item-selection, .review-bill {
+            margin-bottom: 30px;
+        }
+
+        .item-selection h2, .review-bill h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        select, input[type="number"], button {
+            width: calc(100% - 22px);
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        select:focus, input[type="number"]:focus {
+            border-color: #4a90e2;
+            outline: none;
+            box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+        }
+
+        button {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background-color: #357abd;
+            transform: scale(1.05);
+        }
+
+        .item-list ul, .selected-items ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .item-list li, .selected-items li {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .item-list li:hover, .selected-items li:hover {
+            background: #e9e9e9;
+        }
+
+        .review-bill {
+            border-top: 2px solid #ddd;
+            padding-top: 20px;
+        }
+
+        .review-bill .total {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .error, .success {
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .error {
+            color: #e74c3c;
+        }
+
+        .success {
+            color: #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Select Items</h1>
+        
+        <div class="item-selection">
+            <h2>Available Items</h2>
+            <form id="itemForm">
+                <label for="itemSelect">Select an Item:</label>
+                <select id="itemSelect" name="itemSelect">
+                    <option value="item1" data-price="10">Item 1 - $10</option>
+                    <option value="item2" data-price="20">Item 2 - $20</option>
+                    <option value="item3" data-price="15">Item 3 - $15</option>
+                </select>
+                
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" min="1" value="1">
+                
+                <button type="button" onclick="addItem()">Add to List</button>
+            </form>
+        </div>
+
+        <div class="review-bill">
+            <h2>Review & Bill</h2>
+            <ul id="selectedItems">
+                <!-- Selected items will be dynamically added here -->
+            </ul>
+            <div class="total" id="totalPrice">Total Price: $0</div>
+            <button id="checkoutButton">Proceed to Checkout</button>
+        </div>
+        
+        <div id="message" class="success"></div>
+    </div>
+
+    <script>
+        let total = 0;
+
+        function addItem() {
+            const itemSelect = document.getElementById('itemSelect');
+            const quantity = parseInt(document.getElementById('quantity').value, 10);
+            const selectedItems = document.getElementById('selectedItems');
+            const totalPrice = document.getElementById('totalPrice');
+            const message = document.getElementById('message');
+            
+            const selectedOption = itemSelect.options[itemSelect.selectedIndex];
+            const itemName = selectedOption.text;
+            const itemPrice = parseFloat(selectedOption.getAttribute('data-price'));
+
+            if (quantity <= 0) {
+                message.textContent = 'Quantity must be at least 1!';
+                message.className = 'error';
+                return;
+            }
+
+            total += itemPrice * quantity;
+            totalPrice.textContent = `Total Price: $${total.toFixed(2)}`;
+
+            const listItem = document.createElement('li');
+            listItem.textContent = `${itemName} - Quantity: ${quantity} - $${(itemPrice * quantity).toFixed(2)}`;
+            selectedItems.appendChild(listItem);
+
+            message.textContent = 'Item added successfully!';
+            message.className = 'success';
+        }
+
+        document.getElementById('checkoutButton').addEventListener('click', function() {
+            const message = document.getElementById('message');
+
+            if (total > 0) {
+                message.textContent = `Proceeding to checkout with a total of $${total.toFixed(2)}.`;
+                message.className = 'success';
+                // Redirect or process payment here
+                // Example: window.location.href = 'checkout.html';
+            } else {
+                message.textContent = 'Please add items to your list before proceeding!';
+                message.className = 'error';
+            }
+        });
+    </script>
+</body>
+</html>

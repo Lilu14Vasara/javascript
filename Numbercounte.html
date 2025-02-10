@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Counter</title>
+    <style>
+        body 
+        { 
+            font-family: Arial, sans-serif;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            background-color: #f0f0f0; 
+            margin: 0; }
+        .container 
+        { 
+            text-align: center; 
+        }
+        #counter { 
+            font-size: 2em;
+             margin: 20px; 
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Number Counter</h1>
+        <button id="decrease">Decrease</button>
+        <span id="counter">0</span>
+        <button id="increase">Increase</button>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const counter = document.getElementById('counter');
+            let count = 0;
+
+            document.getElementById('increase').addEventListener('click', () => {
+                count++;
+                counter.textContent = count;
+            });
+
+            document.getElementById('decrease').addEventListener('click', () => {
+                count--;
+                counter.textContent = count;
+            });
+        });
+    </script>
+</body>
+</html>

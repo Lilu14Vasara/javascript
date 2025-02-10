@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; margin: 0; }
+        .container { text-align: center; }
+        #quote { margin: 20px 0; font-style: italic; }
+        button { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quote Generator</h1>
+        <div id="quote">Click the button to generate a quote.</div>
+        <button id="newQuote">New Quote</button>
+    </div>
+    <script>
+        const quotes = [
+            "The only limit to our realization of tomorrow is our doubts of today.",
+            "Do not wait to strike till the iron is hot, but make it hot by striking.",
+            "The purpose of our lives is to be happy.",
+            "Life is what happens when you're busy making other plans.",
+            "Get your facts first, then you can distort them as you please."
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const quoteDiv = document.getElementById('quote');
+            const newQuoteButton = document.getElementById('newQuote');
+
+            function getRandomQuote() {
+                return quotes[Math.floor(Math.random() * quotes.length)];
+            }
+
+            newQuoteButton.addEventListener('click', () => {
+                quoteDiv.textContent = getRandomQuote();
+            });
+        });
+    </script>
+</body>
+</html>

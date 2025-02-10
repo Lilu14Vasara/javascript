@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Event KeyCodes</title>
+    <link rel="stylesheet" type="text/css" href="../styles.css" />
+    <style>
+      table,
+      th,
+      td {
+        border: 1px solid #e7e7e7;
+      }
+      .project {
+        background-color: #1c1c1c;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        height: 100vh;
+      }
+
+      .color {
+        color: aliceblue;
+        display: flex;
+        flex-direction: row;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" aria-current="page">Home</a>
+      <a target="_blank" href="https://www.youtube.com/@chaiaurcode"
+        >Youtube channel</a
+      >
+    </nav>
+    <div class="project">
+      <div id="insert">
+        <div class="key">Press the key and watch magic</div>
+      </div>
+    </div>
+
+    <script>
+
+const keyElement = document.querySelector('.key');
+
+// Define a function to handle key presses
+function handleKeyPress(event) {
+    // Show which key was pressed
+    const key = event.key;
+    const code = event.code;
+
+    // Update the text content
+    keyElement.textContent = `Key pressed: ${key} (Code: ${code})`;
+
+    // Change the background color based on the key
+    if (key === 'Enter') {
+        document.querySelector('.project').style.backgroundColor = 'lightgreen';
+    } else if (key === 'Escape') {
+        document.querySelector('.project').style.backgroundColor = 'lightcoral';
+    } else {
+        document.querySelector('.project').style.backgroundColor = '#1c1c1c'; // default color
+    }
+}
+
+// Add the event listener for key presses
+document.addEventListener('keydown', handleKeyPress);
+
+    </script>
+  </body>
+</html>

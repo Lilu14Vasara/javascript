@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Validation</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; margin: 0; }
+        .container { text-align: center; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Form Validation</h1>
+        <form id="myForm">
+            <input type="text" id="name" placeholder="Your Name" required style="margin: 20px;"><br>
+            <input type="email" id="email" placeholder="Your Email" required style="margin: 20px;"><br>
+            <button type="submit">Submit</button>
+        </form>
+        <p id="message" class="error"></p>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('myForm');
+            const message = document.getElementById('message');
+
+            form.addEventListener('submit', (event) => {
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+
+                if (!name || !email) {
+                    event.preventDefault();
+                    message.textContent = 'Please fill in all fields.';
+                } else {
+                    message.textContent = 'Form submitted successfully!';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
