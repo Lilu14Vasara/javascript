@@ -86,3 +86,57 @@
     </table>
 </body>
 </html>
+
+
+
+var tds = document.getElementsByTagName('td');
+var green = [];
+var red = [];
+var yellow = [];
+
+for (let i = 0; i < tds.length; i++) {
+    if (tds[i].id === "colorG") green.push(tds[i]);
+    if (tds[i].id === "colorR") red.push(tds[i]);
+    if (tds[i].id === "colorY") yellow.push(tds[i]);
+}
+
+function dimLights() {
+    
+    for (let i = 0; i < green.length; i++) { green[i].style.opacity = '0.3'; }
+    for (let i = 0; i < red.length; i++) { red[i].style.opacity = '0.3'; }
+    for (let i = 0; i < yellow.length; i++) { yellow[i].style.opacity = '0.3'; }
+}
+
+var step = 0;
+
+function startTraffic() {
+    dimLights();
+
+    
+    for (let i = 0; i < red.length; i++) {
+        red[i].style.opacity = '1';
+    }
+
+    
+    if (green[step]) green[step].style.opacity = '1';
+    if (red[step]) red[step].style.opacity = '0.3';
+
+    setTimeout(function() {
+        
+        if (green[step]) green[step].style.opacity = '0.3';
+        if (yellow[step]) yellow[step].style.opacity = '1';
+
+        setTimeout(function() {
+            
+            step++;
+            if (step >= green.length) step = 0;
+            startTraffic();
+        }, 2000); 
+
+    }, 5000); 
+}
+
+startTraffic();
+
+
+
