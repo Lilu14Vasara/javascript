@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Display</title>
+    <style>
+        h2{
+            text-align: center;
+        }
+      
+     #container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+
+button {
+    padding: 10px 20px;
+    margin: 0 5px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s;
+}
+
+
+
+#currentpage {
+    display: inline-block;
+    min-width: 40px;
+    font-weight: bold;
+    color: #555;
+    vertical-align: middle;
+    background-color: #db7f07;
+}
+.counter{
+    background-color: #f5c802;
+    color: #555;;
+}
+    
+button .counter :hover {
+  background-color: oklch(84.325% 0.15262 82.671);
+}
+    </style> 
+</head>
+<body>
+    <h2>Pagination Of Data</h2>
+    <div id="container">
+    <h3 id="context"></h3>
+    <div id="data">
+         <div id="data">
+            <% students.forEach(student => { %>
+                <div>
+                    <p>Student_No: <%= student.student_id %></p>
+                    <p><strong><%= student.first_name %> <%= student.last_name %></strong></p>
+                    <p>Email: <%= student.email %></p>
+                    <p>Contact: <%= student.contact_number %></p>
+                    <p>Address: <%= student.address %></p>
+                    <p>Birthdate: <%= student.birth_date %></p>
+                    <p>City: <%= student.city %></p>
+                    <hr>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+    <button type="button" onclick="nextPage()"> Next  </button>
+  
+    <button class="counter" id="currentPage" onclick="jumpToPage(currentPage)"></button>
+    <button class="counter" id="currentNext" onclick="jumpToPage(currentPage+1)"></button>
+    <button class="counter" id="currentNextSecond" onclick="jumpToPage(currentPage+2)"></button>
+    <button class="counter" id="currentNextThird" onclick="jumpToPage(currentPage+3)"></button>
+    <button class="counter" id="last" onclick="jumpToPage(totalpages)" >Last</button>
+   
+    <button type="button" onclick="previousPage()">  Previous  </button>
+    </div>
+
+
+    <script>
+         let currentpage =<%= currentPage%>;
+        let totalpages = <%= totalPages%>;
+        let maxData=<%= pageSize %>;
+        let pages=to/maxData;
+        
+      const data=  document.getElementById('data');
+       const page= document.getElementById('currentpage');
+       
+       
+
+       function updateButton() {
+        document.getElementById('currentpage').innerHTML=`  ${currentPage}`;
+        document.getElementById("currentNext").innerHTML=` ${currentPage+1}`;
+        document.getElementById("currentNextSecond").innerHTML=`  ${currentPage+2}`;
+        document.getElementById("currentNextThird").innerHTML=` ${currentPage+3}`;
+        document.getElementById("context").innerHTML=`Page ${currentPage}`
+       }
+
+       function nextPage() {
+       if (currentpage<pages) {
+             currentpage++;
+            updateButton();
+            
+        }
+        
+       }
+       function previousPage() {
+        if (currentpage>1) {
+            currentpage--;
+            updateButton();
+        }   
+       }
+       function navigateTopage(page) {
+        if (page>=1 && pageNumber <=totalpages) {
+             window.location.href = `/?page=${pageNumber}`;
+        }
+        
+       }
+      
+   function jumpToPage(pageNumber) {
+    if (pageNumber >= 1 && pageNumber <= totalpages) {
+        currentpage = pageNumber;
+        updateButton();
+         
+    }
+}
+
+       updateButton();
+    </script>
+</body>
+
+</html>
+
+const mysql=require('mysql2');
+const connection=mysql.createConnection({
+    host:"localhost",
+    user:"root",
+    password:"Dev@123",
+    database:"student_details"
+});
+
+connection.connect((err)=>{
+    if (err) {
+        console.log("Database connection failed");
+        return;   
+    }
+
+    console.log("Connect to Mysql database");
+    
+});
+module.exports=connection;
+
+
+const express = require("express");
+const app = express();
+const db = require("./db");
+require('dotenv').config();
+
+app.set("view engine", "ejs");
+app.use(express.json());
+
+const totalDataSize = process.env.TOTAL_DATA_SIZE;
+const pageSize = parseInt(process.env.PAGE_LIMIT);  
+const totalPages = Math.ceil(totalDataSize / pageSize);
+
+app.get("/", (req, res) => {
+    let currentPage = parseInt(req.query.page) || 1;  
+    const offset = (currentPage - 1) * pageSize;
+
+    console.log(`Fetching data for page ${currentPage}, offset ${offset}`);
+
+    db.query('SELECT * FROM students LIMIT ? OFFSET ?', [pageSize, offset], (err, results) => {
+        if (err) {
+            console.log("Error fetching data from database:", err);
+            res.status(500).send("Error fetching data");
+            return;
+        }
+        console.log("Fetched results:", results);
+        res.render("pagination", {
+            students: results, 
+            totalDataSize, 
+            pageSize, 
+            totalPages, 
+            currentPage
+        });
+    });
+});
+
+app.listen(3000, () => {
+    console.log("Server listening at port 3000");
+});
