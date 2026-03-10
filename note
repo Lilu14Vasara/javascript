@@ -60,7 +60,7 @@ button .counter :hover {
     <div id="container">
     <h3 id="context"></h3>
     <div id="data">
-         <div id="data">
+        
             <% students.forEach(student => { %>
                 <div>
                     <p>Student_No: <%= student.student_id %></p>
@@ -81,56 +81,52 @@ button .counter :hover {
     <button class="counter" id="currentNext" onclick="jumpToPage(currentPage+1)"></button>
     <button class="counter" id="currentNextSecond" onclick="jumpToPage(currentPage+2)"></button>
     <button class="counter" id="currentNextThird" onclick="jumpToPage(currentPage+3)"></button>
-    <button class="counter" id="last" onclick="jumpToPage(totalpages)" >Last</button>
+    <button class="counter" id="last" onclick="jumpToPage(totalPages)" >Last</button>
    
     <button type="button" onclick="previousPage()">  Previous  </button>
     </div>
 
 
     <script>
-         let currentpage =<%= currentPage%>;
-        let totalpages = <%= totalPages%>;
-        let maxData=<%= pageSize %>;
-        let pages=to/maxData;
+         let currentPage =<%= currentPage%>;
+        let totalPages = <%= totalPages%>;
+     
+    
         
       const data=  document.getElementById('data');
-       const page= document.getElementById('currentpage');
+       const page= document.getElementById('currentPage');
        
        
 
        function updateButton() {
-        document.getElementById('currentpage').innerHTML=`  ${currentPage}`;
-        document.getElementById("currentNext").innerHTML=` ${currentPage+1}`;
-        document.getElementById("currentNextSecond").innerHTML=`  ${currentPage+2}`;
-        document.getElementById("currentNextThird").innerHTML=` ${currentPage+3}`;
+        document.getElementById('currentPage').innerHTML={currentPage};
+        document.getElementById("currentNext").innerHTML={currentPage+1};
+        document.getElementById("currentNextSecond").innerHTML= {currentPage+2};
+        document.getElementById("currentNextThird").innerHTML= {currentPage+3};
         document.getElementById("context").innerHTML=`Page ${currentPage}`
        }
 
        function nextPage() {
-       if (currentpage<pages) {
-             currentpage++;
-            updateButton();
+       if (currentPage<totalPages) {
+             currentPage++;
+            
+              window.location.href = `/?page=${currentPage}`;
             
         }
         
        }
        function previousPage() {
-        if (currentpage>1) {
-            currentpage--;
-            updateButton();
+        if (currentPage>1) {
+            currentPage--;
+            window.location.href = `/?page=${currentPage}`;
         }   
        }
-       function navigateTopage(page) {
-        if (page>=1 && pageNumber <=totalpages) {
-             window.location.href = `/?page=${pageNumber}`;
-        }
-        
-       }
+
       
    function jumpToPage(pageNumber) {
-    if (pageNumber >= 1 && pageNumber <= totalpages) {
-        currentpage = pageNumber;
-        updateButton();
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+
+       window.location.href = `/?page=${pageNumber}`;
          
     }
 }
@@ -140,6 +136,10 @@ button .counter :hover {
 </body>
 
 </html>
+
+
+
+
 
 const mysql=require('mysql2');
 const connection=mysql.createConnection({
