@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Display</title>
+    <style>
+        h2{
+            text-align: center;
+        }
+      
+     #container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+
+button {
+    padding: 10px 20px;
+    margin: 0 5px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s;
+}
+
+
+
+#currentPage {
+    display: inline-block;
+    min-width: 40px;
+    font-weight: bold;
+    color: #555;
+    vertical-align: middle;
+    background-color: #db7f07;
+}
+.counter{
+    background-color: #f5c802;
+    color: #555;;
+}
+    
+button .counter :hover {
+  background-color: oklch(84.325% 0.15262 82.671);
+}
+    </style> 
+</head>
+<body>
+    <h2>Pagination Of Data</h2>
+    <div id="container">
+    <h3 id="context"></h3>
+    <div id="data"></div>
+    <button type="button" onclick="nextPage()"> Next  </button>
+  
+    <button class="counter" id="currentPage" onclick="jumpToPage(currentPage)"></button>
+    <button class="counter" id="currentNext" onclick="jumpToPage(currentPage+1)"></button>
+    <button class="counter" id="currentNextSecond" onclick="jumpToPage(currentPage+2)"></button>
+    <button class="counter" id="currentNextThird" onclick="jumpToPage(currentPage+3)"></button>
+    <button class="counter" id="last" onclick="jumpToPage(totalPages)" >Last</button>
+   
+    <button type="button" onclick="previousPage()">  Previous  </button>
+    </div>
+
+
+    <script>
+        
+      const data=  document.getElementById('data');
+       const page= document.getElementById('currentPage');
+       
+
+       let user=[];
+       for (let i = 1; i <= 1000; i++) {
+        user.push(`User ${i}`)
+        
+       }
+
+       let currentPage=1;
+       let maxData=20;
+        let totalPages = Math.ceil(user.length / maxData);
+
+       function dataDisplay() {
+       
+          let start=(currentPage-1)*maxData;//(1-1)*10=0
+          let end=start+maxData;//0+20 to display 20 pages
+          
+          let pageData=user.slice(start,end)//give index of from  user 0 to 20
+          let html=""
+          pageData.forEach(function (user) {
+            html+= `<div class="item">${user}</div>`
+          });
+          if(currentPage==totalPages){
+             let last=document.getElementsByClassName("counter");
+          }
+       
+          page.innerHTML=`  ${currentPage}`;
+          
+         document.getElementById("currentNext").innerHTML=` ${currentPage+1}`;
+          document.getElementById("currentNextSecond").innerHTML=`  ${currentPage+2}`;
+          document.getElementById("currentNextThird").innerHTML=` ${currentPage+3}`;
+          document.getElementById("context").innerHTML=`Page ${currentPage}`
+          data.innerHTML=html;
+        
+       }
+
+       function nextPage() {
+       if (currentPage*maxData <user.length) {//1*10 < 50
+             currentPage++;
+            dataDisplay();
+            
+        }
+        
+       }
+       function previousPage() {
+        if (currentPage>1) {
+            currentPage--;
+            dataDisplay();
+        }   
+       }
+
+
+      
+   function jumpToPage(pageNumber) {
+    let totalPages = Math.ceil(user.length / maxData);
+    
+   
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+        currentPage = pageNumber;
+        dataDisplay();
+    }
+}
+
+       dataDisplay();
+    </script>
+</body>
+
+</html>
