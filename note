@@ -1,140 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Display</title>
-    <style>
-        h2{
-            text-align: center;
-        }
-      
-     #container {
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    text-align: center;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+<meta charset="UTF-8">
+<title>Pagination Of Data</title>
+
+<style>
+
+h2{
+    text-align:center;
 }
 
-
-
-button {
-    padding: 10px 20px;
-    margin: 0 5px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #fff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s;
+#container{
+max-width:600px;
+margin:50px auto;
+padding:20px;
+font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+text-align:center;
+background-color:#ffffff;
+border-radius:12px;
+box-shadow:0 4px 20px rgba(0,0,0,0.1);
 }
 
-
-
-#currentpage {
-    display: inline-block;
-    min-width: 40px;
-    font-weight: bold;
-    color: #555;
-    vertical-align: middle;
-    background-color: #db7f07;
+button{
+padding:10px 20px;
+margin:5px;
+font-size:14px;
+font-weight:600;
+color:#fff;
+background-color:#007bff;
+border:none;
+border-radius:6px;
+cursor:pointer;
 }
+
 .counter{
-    background-color: #f5c802;
-    color: #555;;
+background-color:#f5c802;
+color:#555;
 }
-    
-button .counter :hover {
-  background-color: oklch(84.325% 0.15262 82.671);
+
+.counter:hover{
+background-color:orange;
 }
-    </style> 
+
+</style>
 </head>
+
 <body>
-    <h2>Pagination Of Data</h2>
-    <div id="container">
-    <h3 id="context"></h3>
-    <div id="data">
-        
-            <% students.forEach(student => { %>
-                <div>
-                    <p>Student_No: <%= student.student_id %></p>
-                    <p><strong><%= student.first_name %> <%= student.last_name %></strong></p>
-                    <p>Email: <%= student.email %></p>
-                    <p>Contact: <%= student.contact_number %></p>
-                    <p>Address: <%= student.address %></p>
-                    <p>Birthdate: <%= student.birth_date %></p>
-                    <p>City: <%= student.city %></p>
-                    <hr>
-                </div>
-            <% }) %>
-        </div>
-    </div>
-    <button type="button" onclick="nextPage()"> Next  </button>
-  
-    <button class="counter" id="currentPage" onclick="jumpToPage(currentPage)"></button>
-    <button class="counter" id="currentNext" onclick="jumpToPage(currentPage+1)"></button>
-    <button class="counter" id="currentNextSecond" onclick="jumpToPage(currentPage+2)"></button>
-    <button class="counter" id="currentNextThird" onclick="jumpToPage(currentPage+3)"></button>
-    <button class="counter" id="last" onclick="jumpToPage(totalPages)" >Last</button>
-   
-    <button type="button" onclick="previousPage()">  Previous  </button>
-    </div>
 
+<h2>Pagination Of Data</h2>
 
-    <script>
-         let currentPage =<%= currentPage%>;
-        let totalPages = <%= totalPages%>;
-     
-    
-        
-      const data=  document.getElementById('data');
-       const page= document.getElementById('currentPage');
-       
-       
+<div id="container">
 
-       function updateButton() {
-        document.getElementById('currentPage').innerHTML={currentPage};
-        document.getElementById("currentNext").innerHTML={currentPage+1};
-        document.getElementById("currentNextSecond").innerHTML= {currentPage+2};
-        document.getElementById("currentNextThird").innerHTML= {currentPage+3};
-        document.getElementById("context").innerHTML=`Page ${currentPage}`
-       }
+<h3 id="context"></h3>
 
-       function nextPage() {
-       if (currentPage<totalPages) {
-             currentPage++;
-            
-              window.location.href = `/?page=${currentPage}`;
-            
-        }
-        
-       }
-       function previousPage() {
-        if (currentPage>1) {
-            currentPage--;
-            window.location.href = `/?page=${currentPage}`;
-        }   
-       }
+<div id="data">
 
-      
-   function jumpToPage(pageNumber) {
-    if (pageNumber >= 1 && pageNumber <= totalPages) {
+<% students.forEach(student => { %>
 
-       window.location.href = `/?page=${pageNumber}`;
-         
-    }
+<div>
+
+<p>Student_No: <%= student.studentid %></p>
+<p><strong><%= student.fname %> <%= student.lname %></strong></p>
+<p>Email: <%= student.email %></p>
+<p>Contact: <%= student.contact_number %></p>
+<p>Address: <%= student.address %></p>
+<p>Birthdate: <%= student.birth_date %></p>
+<p>City: <%= student.city %></p>
+
+<hr>
+
+</div>
+
+<% }) %>
+
+</div>
+
+<button onclick="previousPage()">Previous</button>
+
+<button class="counter" id="currentPage" onclick="jumpToPage(currentPage)"></button>
+
+<button class="counter" id="currentNext" onclick="jumpToPage(currentPage+1)"></button>
+
+<button class="counter" id="currentNextSecond" onclick="jumpToPage(currentPage+2)"></button>
+
+<button class="counter" id="currentNextThird" onclick="jumpToPage(currentPage+3)"></button>
+
+<button class="counter" onclick="jumpToPage(totalPages)">Last</button>
+
+<button onclick="nextPage()">Next</button>
+
+</div>
+
+<script>
+
+let currentPage = <%= currentPage %>;
+let totalPages = <%= totalPages %>;
+
+function updateButton(){
+
+document.getElementById("currentPage").innerHTML=currentPage;
+
+document.getElementById("currentNext").innerHTML=currentPage+1;
+
+document.getElementById("currentNextSecond").innerHTML=currentPage+2;
+
+document.getElementById("currentNextThird").innerHTML=currentPage+3;
+
+document.getElementById("context").innerHTML="Page "+currentPage;
+
 }
 
-       updateButton();
-    </script>
-</body>
+function nextPage(){
 
+if(currentPage<totalPages){
+
+window.location.href=`/?page=${currentPage+1}`;
+
+}
+
+}
+
+function previousPage(){
+
+if(currentPage>1){
+
+window.location.href=`/?page=${currentPage-1}`;
+
+}
+
+}
+
+function jumpToPage(pageNumber){
+
+if(pageNumber>=1 && pageNumber<=totalPages){
+
+window.location.href=`/?page=${pageNumber}`;
+
+}
+
+}
+
+updateButton();
+
+</script>
+
+</body>
 </html>
 
 
