@@ -2,44 +2,84 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Pagination Of Data</title>
+<title>Student Pagination</title>
 
 <style>
 
+body{
+font-family:Segoe UI, sans-serif;
+background:#f4f6f9;
+}
+
 h2{
-    text-align:center;
+text-align:center;
+margin-top:30px;
 }
 
 #container{
-max-width:600px;
-margin:50px auto;
-padding:20px;
-font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-text-align:center;
-background-color:#ffffff;
-border-radius:12px;
-box-shadow:0 4px 20px rgba(0,0,0,0.1);
+width:95%;
+max-width:950px;
+margin:30px auto;
+background:white;
+padding:25px;
+border-radius:10px;
+box-shadow:0 5px 20px rgba(0,0,0,0.1);
 }
 
-button{
-padding:10px 20px;
-margin:5px;
-font-size:14px;
-font-weight:600;
-color:#fff;
-background-color:#007bff;
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+th,td{
+padding:10px;
+border-bottom:1px solid #ddd;
+text-align:center;
+}
+
+th{
+background:#007bff;
+color:white;
+position:relative;
+}
+
+.sort{
+font-size:11px;
+cursor:pointer;
+margin-left:4px;
+}
+
+.sort:hover{
+color:yellow;
+}
+
+tr:hover{
+background:#f2f2f2;
+}
+
+.pagination{
+margin-top:20px;
+text-align:center;
+}
+
+.pagination button{
+padding:8px 14px;
+margin:3px;
 border:none;
-border-radius:6px;
+border-radius:5px;
+background:#007bff;
+color:white;
 cursor:pointer;
 }
 
-.counter{
-background-color:#f5c802;
-color:#555;
+.pagination button:hover{
+background:#0056b3;
 }
 
-.counter:hover{
-background-color:orange;
+.active{
+background:#f5c802 !important;
+color:black;
 }
 
 </style>
@@ -47,100 +87,142 @@ background-color:orange;
 
 <body>
 
-<h2>Pagination Of Data</h2>
+<h2>Student Data</h2>
 
 <div id="container">
 
-<h3 id="context"></h3>
+<h3>Page <%= currentPage %></h3>
+<div style="margin-bottom:15px;text-align:center;">
 
-<div id="data">
+    <input 
+    type="text" 
+    id="searchInput"
+    placeholder="Search by First Name"
+    value="<%= search || '' %>"
+    style="padding:8px;width:200px;border:1px solid #ccc;border-radius:5px"
+    >
+    
+    <button onclick="searchStudent()" 
+    style="padding:8px 15px;background:#28a745;color:white;border:none;border-radius:5px;cursor:pointer">
+    Search
+    </button>
+    
+    </div>
+<table>
+
+<thead>
+
+<tr>
+
+<th>
+ID
+<span class="sort" onclick="sortData('studentid','ASC')">▲</span>
+<span class="sort" onclick="sortData('studentid','DESC')">▼</span>
+</th>
+
+<th>
+Name
+<span class="sort" onclick="sortData('fname','ASC')">▲</span>
+<span class="sort" onclick="sortData('fname','DESC')">▼</span>
+</th>
+
+<th>
+Birthdate
+<span class="sort" onclick="sortData('birth_date','ASC')">▲</span>
+<span class="sort" onclick="sortData('birth_date','DESC')">▼</span>
+</th>
+
+<th>
+City
+<span class="sort" onclick="sortData('city','ASC')">▲</span>
+<span class="sort" onclick="sortData('city','DESC')">▼</span>
+</th>
+
+<th>
+Gender
+<span class="sort" onclick="sortData('gender','ASC')">▲</span>
+<span class="sort" onclick="sortData('gender','DESC')">▼</span>
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
 
 <% students.forEach(student => { %>
 
-<div>
-
-<p>Student_No: <%= student.studentid %></p>
-<p><strong><%= student.fname %> <%= student.lname %></strong></p>
-<p>Email: <%= student.email %></p>
-<p>Contact: <%= student.contact_number %></p>
-<p>Address: <%= student.address %></p>
-<p>Birthdate: <%= student.birth_date %></p>
-<p>City: <%= student.city %></p>
-
-<hr>
-
-</div>
+<tr>
+<td><%= student.studentid %></td>
+<td><%= student.fname %> <%= student.lname %></td>
+<td>
+    <%= new Date(student.birth_date).toLocaleDateString('en-GB').replaceAll('/','-') %>
+    </td>
+<td><%= student.city %></td>
+<td><%= student.gender %></td>
+</tr>
 
 <% }) %>
 
-</div>
+</tbody>
 
-<button onclick="previousPage()">Previous</button>
+</table>
 
-<button class="counter" id="currentPage" onclick="jumpToPage(currentPage)"></button>
+<div class="pagination">
 
-<button class="counter" id="currentNext" onclick="jumpToPage(currentPage+1)"></button>
-
-<button class="counter" id="currentNextSecond" onclick="jumpToPage(currentPage+2)"></button>
-
-<button class="counter" id="currentNextThird" onclick="jumpToPage(currentPage+3)"></button>
-
-<button class="counter" onclick="jumpToPage(totalPages)">Last</button>
-
-<button onclick="nextPage()">Next</button>
-
+    <% if(currentPage>1){ %>
+    <button onclick="changePage(<%= currentPage-1 %>)">Previous</button>
+    <% } %>
+    
+    <%
+    let start = Math.max(1, currentPage-2);
+    let end = Math.min(totalPages, currentPage+2);
+    
+    for(let i=start;i<=end;i++){
+    %>
+    
+    <button
+    class="<%= i===currentPage ? 'active' : '' %>"
+    onclick="changePage(<%= i %>)">
+    <%= i %>
+    </button>
+    
+    <% } %>
+    
+    <% if(currentPage<totalPages){ %>
+    <button onclick="changePage(<%= currentPage+1 %>)">Next</button>
+    <% } %>
+    
+    </div>
 </div>
 
 <script>
 
-let currentPage = <%= currentPage %>;
-let totalPages = <%= totalPages %>;
+    let currentSort="<%= sort %>";
+let currentOrder="<%= order %>";
+let searchValue="<%= search || '' %>";
 
-function updateButton(){
+function changePage(page){
 
-document.getElementById("currentPage").innerHTML=currentPage;
-
-document.getElementById("currentNext").innerHTML=currentPage+1;
-
-document.getElementById("currentNextSecond").innerHTML=currentPage+2;
-
-document.getElementById("currentNextThird").innerHTML=currentPage+3;
-
-document.getElementById("context").innerHTML="Page "+currentPage;
+window.location.href=`/?page=${page}&sort=${currentSort}&order=${currentOrder}&search=${searchValue}`;
 
 }
 
-function nextPage(){
+function sortData(field,order){
 
-if(currentPage<totalPages){
-
-window.location.href=`/?page=${currentPage+1}`;
+window.location.href=`/?page=1&sort=${field}&order=${order}&search=${searchValue}`;
 
 }
 
-}
+function searchStudent(){
 
-function previousPage(){
+let name=document.getElementById("searchInput").value;
 
-if(currentPage>1){
-
-window.location.href=`/?page=${currentPage-1}`;
+window.location.href=`/?page=1&search=${name}&sort=${currentSort}&order=${currentOrder}`;
 
 }
 
-}
 
-function jumpToPage(pageNumber){
-
-if(pageNumber>=1 && pageNumber<=totalPages){
-
-window.location.href=`/?page=${pageNumber}`;
-
-}
-
-}
-
-updateButton();
 
 </script>
 
@@ -183,29 +265,41 @@ const totalDataSize = process.env.TOTAL_DATA_SIZE;
 const pageSize = parseInt(process.env.PAGE_LIMIT);  
 const totalPages = Math.ceil(totalDataSize / pageSize);
 
-app.get("/", (req, res) => {
-    let currentPage = parseInt(req.query.page) || 1;  
-    const offset = (currentPage - 1) * pageSize;
+app.get("/", (req,res)=>{
 
-    console.log(`Fetching data for page ${currentPage}, offset ${offset}`);
-
-    db.query('SELECT * FROM students LIMIT ? OFFSET ?', [pageSize, offset], (err, results) => {
-        if (err) {
-            console.log("Error fetching data from database:", err);
-            res.status(500).send("Error fetching data");
-            return;
-        }
-        console.log("Fetched results:", results);
-        res.render("pagination", {
-            students: results, 
-            totalDataSize, 
-            pageSize, 
-            totalPages, 
-            currentPage
-        });
+    let currentPage=parseInt(req.query.page)||1;
+    let sort=req.query.sort||"studentid";
+    let order=req.query.order||"ASC";
+    let search=req.query.search||"";
+    
+    const offset=(currentPage-1)*pageSize;
+    
+    let query=`
+    SELECT * FROM students
+    WHERE fname LIKE ?
+    ORDER BY ${sort} ${order}
+    LIMIT ? OFFSET ?
+    `;
+    
+    db.query(query,[`%${search}%`,pageSize,offset],(err,results)=>{
+    
+    if(err){
+    console.log(err);
+    return res.send("Database error");
+    }
+    
+    res.render("pagination",{
+    students:results,
+    currentPage,
+    totalPages,
+    sort,
+    order,
+    search
     });
-});
-
+    
+    });
+    
+    });
 app.listen(3000, () => {
     console.log("Server listening at port 3000");
 });
