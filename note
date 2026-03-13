@@ -1,305 +1,376 @@
+const express=require("express");
+const app=express();
+const db=require('./dbPage')
+
+app.set("view engine","ejs");
+app.use(express.json())
+require('dotenv').config();
+
+
+db.query(`select count(*) as total from student`,(err,result)=>{
+    if (err) {
+        console.log("Error in counting student records");
+        return;
+    }
+    const totalDataSize=result[0].total;
+
+    const pageSize= parseInt(process.env.PAGE_LIMIT);
+
+    const totalPages=Math.ceil(totalDataSize/pageSize);
+
+
+app.get("/",(req,res)=>{
+
+        let currentPage=parseInt(req.query.page)||1;
+        let sort=req.query.sort||'student_id';
+        let order=req.query.order||'ASC';
+        let search=req.query.search||"";
+
+        currentPage = Math.min(currentPage, totalPages);
+
+        let offset=(currentPage-1)*pageSize;
+        let query=`SELECT * From student where first_name like ? order by ${sort} ${order} LIMIT ? OFFSET ?`;//?  replace with search field ,pageSize,offset and % for marching value from starting middle ending
+    db.query(query,[`%${search}%`,pageSize,offset],(err,results)=>{
+        if (err) {
+            console.log("Error In fetching Data")
+            return res.send("Database Error");
+        }
+    
+        res.render("paginationContext",{
+            student:results,
+            currentPage,
+            totalPages,
+            sort,
+            order,
+            search
+        });
+    });
+   
+});
+
+});
+
+app.get("/:id",(req,res)=>{
+    let student=student.find(u=>u.id==parseInt(req.params.id));
+    if (!student) {
+        res.status(404).send("Student Not Found")
+    }
+    db.query(`SELECT * FROM STUDENT WHERE student_id=${id}`,(err,result)=>{
+        if (err) {
+            return res.send("Error in Fetching data")
+        }
+        res.result[0];
+    });
+});
+
+app.post("/student",(req,res)=>{
+    let id=req.body.id;
+    let first_name=req.body.first_name;
+    let last_name=req.body.last_name;
+    let email=req.body.email;
+    let contact_no=req.body.contact_no;
+    let address=req.body.address;
+    let birth_date=req.body.dob;
+    let gender=req.body.gender;
+    let city=req.body.city
+
+    db.query(`INSERT INTO STUDENT VALUES(${id},${first_name},${last_name},${email},${contact_no},${address},${birth_date},${gender},${city})`,(err,result)=>{
+        if (err) {
+           return res.status(501).send("Error in sending data")
+        }
+        res.send(result);
+    })
+});
+
+
+app.put("/student/:id",(req,res)=>{
+let student=student.find(u=>u.id==parseInt(req.params.id));
+
+if (!student) {
+   return  res.send("student not found");
+}
+
+student.first_name=req.body.first_name||student.first_name;
+student.last_name=req.body.last_name||student.last_name;
+student.email=req.body.email||student.email;
+student.contact_no=req.body.contact_no||student.contact_no;
+student.address=req.body.address||student.address;
+student.birth_date=req.body.dob||student.birth_date;
+student.gender=req.body.gender||student.gender;
+student.city=req.body.city||student.city;
+
+db.query(`UPDATE STUDENT SET first_name=${student.first_name},last_name=${student.last_name},email=${student.email},contact_no=${student.contact_no},student.address=${student.address},
+    birth_date=${student.birth_date},gender=${student.gender},city=${student.city}`,(err,result)=>{
+
+        if (err){
+         return res.send("Error in Updating Data")
+        }
+        res.send("Updated Successfully");
+    })
+});
+// app.patch("/student/:id",(req,res)=>{
+//     let student=student.find(u=>u.id==parseInt(req.params.id));
+// });
+
+app.delete("/student/:id",(req,res)=>{
+     let student_index=student.findIndex(u=>u.id==parseInt(req.params.id));
+
+     if (!student_index) {
+        return res.status(404).send("User Not Found");
+     }
+     db.query(`DELETE FROM STUDENT WHERE student_id=${student_index}`,(err,result)=>{
+        if (err) {
+            return res.send("Error in deleting Student Data")
+        }
+        res.send("Deleted Succesfully")
+     })
+})
+
+app.listen(5000,()=>{
+    console.log("Server is Running At port 5000")
+}) 
+
+
+create table student(student_id int auto_increment primary key,
+					 first_name varchar(50) not null,
+                     last_name varchar(50) not null,
+                     email varchar(50) unique not null,
+                     contact_number varchar(20) not null,
+                     address varchar(100) not null,
+                     birth_date date not null,
+                     gender enum("male","Female") not null,
+                     city varchar(30) not null);
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Student Pagination</title>
-
-<style>
-
-body{
-font-family:Segoe UI, sans-serif;
-background:#f4f6f9;
-}
-
-h2{
-text-align:center;
-margin-top:30px;
-}
-
-#container{
-width:95%;
-max-width:950px;
-margin:30px auto;
-background:white;
-padding:25px;
-border-radius:10px;
-box-shadow:0 5px 20px rgba(0,0,0,0.1);
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:20px;
-}
-
-th,td{
-padding:10px;
-border-bottom:1px solid #ddd;
-text-align:center;
-}
-
-th{
-background:#007bff;
-color:white;
-position:relative;
-}
-
-.sort{
-font-size:11px;
-cursor:pointer;
-margin-left:4px;
-}
-
-.sort:hover{
-color:yellow;
-}
-
-tr:hover{
-background:#f2f2f2;
-}
-
-.pagination{
-margin-top:20px;
-text-align:center;
-}
-
-.pagination button{
-padding:8px 14px;
-margin:3px;
-border:none;
-border-radius:5px;
-background:#007bff;
-color:white;
-cursor:pointer;
-}
-
-.pagination button:hover{
-background:#0056b3;
-}
-
-.active{
-background:#f5c802 !important;
-color:black;
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student data Pagination</title>
 </head>
+<style>
+    body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background-color: white;
+    margin:0;
+    padding:30px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+    h3{
+        text-align: center;
+        color: rgb(34, 32, 32);
+    }
+   div table{
+    width:100%;
+    max-width:1100px;
+    background:rgb(78, 78, 78);
+    border-radius:10px;
+    overflow:hidden;
+    border-collapse:collapse;
+    box-shadow:0 6px 20px rgba(0,0,0,0.12);
+}
+th{
+    background:#1a73e8;
+    color:white;
+    padding:14px;
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+}
+td{
+    padding:12px 14px;
+    border-bottom:1px solid #eee;
+    text-align:center;
+    font-size:14px;
+    color:#f5fbff;
+}
+button{
+    background:white;
+    color:#1a73e8;
+    border:1px solid #1a73e8;
+    border-radius:4px;
+    padding:2px 6px;
+    font-size:11px;
+    margin-right:5px;
+}
+#button{
+    margin: 30px;
+    margin-bottom: 20px;
+   box-shadow:0 15px 30px rgba(0,0,0,0.12);
+}
 
+
+    #search {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin: 20px 0;
+        margin-bottom: 20px;
+    }
+
+    #search input[type="text"] {
+        padding: 10px;
+        width: 300px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+        color: #333;
+        transition: border-color 0.3s ease;
+    }
+
+    #search input[type="text"]:focus {
+        border-color: #1a73e8;
+        outline: none;
+    }
+
+    #search input[type="button"] {
+        padding: 10px 20px;
+        background-color: #1a73e8;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    #search input[type="button"]:hover {
+        background-color: #165ab5;
+    }
+
+    #search input[type="button"]:active {
+        background-color: #0f478f;
+    }
+
+   
+    #search input[type="text"]::placeholder {
+        color: #888;
+        font-style: italic;
+    }
+   
+    .sort {
+        cursor: pointer;
+        margin-left: 8px;
+        font-size: 12px;
+        color: #fff;
+        transition: color 0.3s ease;
+    }
+
+    .sort:hover {
+        color: #f1f1f1;
+    }
+  
+    tr:hover {
+        background-color: rgba(26, 115, 232, 0.1);
+    }
+button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+  font-weight: bold;
+}
+ 
+</style>
 <body>
-
-<h2>Student Data</h2>
-
-<div id="container">
-
-<h3>Page <%= currentPage %></h3>
-<div style="margin-bottom:15px;text-align:center;">
-
-    <input 
-    type="text" 
-    id="searchInput"
-    placeholder="Search by First Name"
-    value="<%= search || '' %>"
-    style="padding:8px;width:200px;border:1px solid #ccc;border-radius:5px"
-    >
     
-    <button onclick="searchStudent()" 
-    style="padding:8px 15px;background:#28a745;color:white;border:none;border-radius:5px;cursor:pointer">
-    Search
-    </button>
-    
+    <h3> Student Records</h3>
+    <h4 id="page"></h4>
+    <div id="search">
+    <input type="text" id="searchInput" value="<%= search %>" placeholder="Search By Name">
+    <input type="button" onclick="searchStudent()" value="submit">
     </div>
-<table>
 
-<thead>
 
-<tr>
-
-<th>
-ID
-<span class="sort" onclick="sortData('studentid','ASC')">▲</span>
-<span class="sort" onclick="sortData('studentid','DESC')">▼</span>
-</th>
-
-<th>
-Name
-<span class="sort" onclick="sortData('fname','ASC')">▲</span>
-<span class="sort" onclick="sortData('fname','DESC')">▼</span>
-</th>
-
-<th>
-Birthdate
-<span class="sort" onclick="sortData('birth_date','ASC')">▲</span>
-<span class="sort" onclick="sortData('birth_date','DESC')">▼</span>
-</th>
-
-<th>
-City
-<span class="sort" onclick="sortData('city','ASC')">▲</span>
-<span class="sort" onclick="sortData('city','DESC')">▼</span>
-</th>
-
-<th>
-Gender
-<span class="sort" onclick="sortData('gender','ASC')">▲</span>
-<span class="sort" onclick="sortData('gender','DESC')">▼</span>
-</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-<% students.forEach(student => { %>
-
-<tr>
-<td><%= student.studentid %></td>
-<td><%= student.fname %> <%= student.lname %></td>
-<td>
-    <%= new Date(student.birth_date).toLocaleDateString('en-GB').replaceAll('/','-') %>
-    </td>
-<td><%= student.city %></td>
-<td><%= student.gender %></td>
-</tr>
-
-<% }) %>
-
-</tbody>
-
-</table>
-
-<div class="pagination">
-
-    <% if(currentPage>1){ %>
-    <button onclick="changePage(<%= currentPage-1 %>)">Previous</button>
-    <% } %>
     
-    <%
-    let start = Math.max(1, currentPage-2);
-    let end = Math.min(totalPages, currentPage+2);
+ <div>
+    <table>
+        <tr>
+        <th>Student No<span class="sort" onclick="sortData('student_id','ASC')">▲</span>
+          <span class="sort" onclick="sortData('student_id','DESC')">▼</span></th>
+         <th> Full Name
+            <span class="sort" onclick="sortData('first_name','ASC')">▲</span>
+          <span class="sort" onclick="sortData('first_name','DESC')">▼</span>
+         </th>
+          <th>Email</th>
+          <th>Contact Number</th>
+          <th>Birth Date
+            <span class="sort" onclick="sortData('birth_date','ASC')">▲</span>
+          <span class="sort" onclick="sortData('birth_date','DESC')">▼</span>
+          </th>
+          <th>Gender 
+            <span class="sort" onclick="sortData('gender','ASC')">▲</span>
+          <span class="sort" onclick="sortData('gender','DESC')">▼</span>
+          </th>
+          <th>City
+            <span class="sort" onclick="sortData('city','ASC')">▲</span>
+          <span class="sort" onclick="sortData('city','DESC')">▼</span>
+          </th>
+          <th>Address</th>
+        </tr>
+        <% student.forEach(user => { %>
+        <tr>
     
-    for(let i=start;i<=end;i++){
-    %>
-    
-    <button
-    class="<%= i===currentPage ? 'active' : '' %>"
-    onclick="changePage(<%= i %>)">
-    <%= i %>
-    </button>
-    
-    <% } %>
-    
-    <% if(currentPage<totalPages){ %>
-    <button onclick="changePage(<%= currentPage+1 %>)">Next</button>
-    <% } %>
-    
-    </div>
+            <td><%= user.student_id %></td>
+            <td><p><%= user.first_name %></p><%= user.last_name %></p></td>
+            <td><%=user.email %></td>
+            <td><%=user.contact_number %></td>
+           <td><%= new Date(user.birth_date).toLocaleDateString('en-GB').replace(/\//g, '-') %></td>
+            <td><%=user.gender %></td>
+            <td><%=user.city %></td>
+            <td><%=user.address %></td>                   
+        </tr>
+         <%  }) %>
+    </table>
 </div>
 
+<div id="pagination">
+
+    <% if (currentPage > 1) { %>
+     <button onclick="changePage(<%= currentPage-1 %>)">Previous</button>
+    <% } %>
+    
+    <% let start=Math.max(1,currentPage-2);%>
+    <% let end=Math.min(totalPages,currentPage+2);%>
+
+    <%for (let i = start; i <= end; i++) {%>
+     
+        <button class="<% i===currentPage ? 'active':"" %>" onclick="changePage(<%= i %>)"><%= i %></button>
+        
+    <% } %>
+
+    <% if (currentPage < totalPages) { %>
+     <button onclick="changePage(<%= currentPage+1 %>)">Next</button>
+    <% } %>
+     <button onclick="changePage(<%= totalPages %>)">Last Page</button> 
+   
+</div>
 <script>
+ 
+    let currentSort="<% sort %>";
+    let currentOrder="<% order%>";
+    let searchValue="<% search %>";
+    document.getElementById('page').innerHTML= `Current Page is : <%= currentPage %>`;
 
-    let currentSort="<%= sort %>";
-let currentOrder="<%= order %>";
-let searchValue="<%= search || '' %>";
-
-function changePage(page){
-
-window.location.href=`/?page=${page}&sort=${currentSort}&order=${currentOrder}&search=${searchValue}`;
-
+    function changePage(page) {
+    window.location.href = `/?page=${page}&sort=${currentSort}&order=${currentOrder}&search=${searchValue}`;
 }
 
-function sortData(field,order){
-
-window.location.href=`/?page=1&sort=${field}&order=${order}&search=${searchValue}`;
-
+function sortData(field, order) {
+    currentSort = field;
+    currentOrder = order;
+    window.location.href = `/?page=1&sort=${field}&order=${order}&search=${searchValue}`;
 }
 
-function searchStudent(){
-
-let name=document.getElementById("searchInput").value;
-
-window.location.href=`/?page=1&search=${name}&sort=${currentSort}&order=${currentOrder}`;
-
+function searchStudent() {
+    let name = document.getElementById("searchInput").value;
+    window.location.href = `/?page=1&search=${name}&sort=${currentSort}&order=${currentOrder}`;
 }
-
-
+    
 
 </script>
-
 </body>
-</html>
-
-
-
-
-
-const mysql=require('mysql2');
-const connection=mysql.createConnection({
-    host:"localhost",
-    user:"root",
-    password:"Dev@123",
-    database:"student_details"
-});
-
-connection.connect((err)=>{
-    if (err) {
-        console.log("Database connection failed");
-        return;   
-    }
-
-    console.log("Connect to Mysql database");
-    
-});
-module.exports=connection;
-
-
-const express = require("express");
-const app = express();
-const db = require("./db");
-require('dotenv').config();
-
-app.set("view engine", "ejs");
-app.use(express.json());
-
-const totalDataSize = process.env.TOTAL_DATA_SIZE;
-const pageSize = parseInt(process.env.PAGE_LIMIT);  
-const totalPages = Math.ceil(totalDataSize / pageSize);
-
-app.get("/", (req,res)=>{
-
-    let currentPage=parseInt(req.query.page)||1;
-    let sort=req.query.sort||"studentid";
-    let order=req.query.order||"ASC";
-    let search=req.query.search||"";
-    
-    const offset=(currentPage-1)*pageSize;
-    
-    let query=`
-    SELECT * FROM students
-    WHERE fname LIKE ?
-    ORDER BY ${sort} ${order}
-    LIMIT ? OFFSET ?
-    `;
-    
-    db.query(query,[`%${search}%`,pageSize,offset],(err,results)=>{
-    
-    if(err){
-    console.log(err);
-    return res.send("Database error");
-    }
-    
-    res.render("pagination",{
-    students:results,
-    currentPage,
-    totalPages,
-    sort,
-    order,
-    search
-    });
-    
-    });
-    
-    });
-app.listen(3000, () => {
-    console.log("Server listening at port 3000");
-});
+</html> 
